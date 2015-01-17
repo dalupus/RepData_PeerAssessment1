@@ -56,24 +56,27 @@ The interval `r myMaxInterval` contains the maximum average steps of `r max(dail
 
 ## Imputing missing values
 
+First we need to find the number of rows that have NA's
+
+```{r}
+numNAs <- nrow(d)-sum(complete.cases(d))
+```
+
+The number of rows with NA's is `r numNAs`.
+
 So what I decided to do for this was to replace NA's with the average number of steps for that interval across all days.
 
-
-First create a function which either leaves it alone if it is valid or replaces it if it is NA.
+In order to do this I first did a join of my average values with my original dataset
 ```{r}
-meanIfNA <- function(interval,value,means){
-  if(is.na(value)){
-    value<-means$avg[[match(interval,means$interval)]]
-    #value<-0
-  }
-  as.numeric(value)
-}
+d <- left_join(d,dailyActivity)
 ```
 
-Now we create a new column where the missing values are replaced.
+Now with a bit of magic using ifelse I combine the steps and avg steps columns where I take steps if it exists or avg if it does not.
+
 ```{r}
-d <- d %>% rowwise() %>% mutate(newSteps=meanIfNA(interval,steps,dailyActivity))
+d <- within(d, newSteps <- ifelse(!is.na(steps),steps,avg))
 ```
+
 
 Create the histogram on this new steps field.
 ```{r, fig.width=9}

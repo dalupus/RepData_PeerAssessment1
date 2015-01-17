@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 Loading my libraries
 
@@ -40,7 +35,7 @@ dailyActivity <- summarise(dailyActivity,steps=sum(steps))
 hist(dailyActivity$steps,main = "Histogram of the Total Number of Steps Taken Each Day",xlab = "steps")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 ```r
 myMean <- mean(dailyActivity$steps)
@@ -60,7 +55,7 @@ dailyActivity<-summarise(dailyActivity,avg = mean(steps))
 with(dailyActivity, plot(interval,avg,type="l",main="Average Steps Taken",ylab="Average Steps"))
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 ```r
 myMaxInterval<- dailyActivity$interval[which.max(dailyActivity$avg)]
@@ -70,43 +65,44 @@ The interval 835 contains the maximum average steps of 206.17.
 
 ## Imputing missing values
 
+First we need to find the number of rows that have NA's
+
+
+```r
+numNAs <- nrow(d)-sum(complete.cases(d))
+```
+
+The number of rows with NA's is 2304.
+
 So what I decided to do for this was to replace NA's with the average number of steps for that interval across all days.
 
-
-First create a function which either leaves it alone if it is valid or replaces it if it is NA.
-
-```r
-meanIfNA <- function(interval,value,means){
-  if(is.na(value)){
-    value<-means$avg[[match(interval,means$interval)]]
-    #value<-0
-  }
-  as.numeric(value)
-}
-```
-
-Now we create a new column where the missing values are replaced.
+In order to do this I first did a join of my average values with my original dataset
 
 ```r
-d <- d %>% rowwise() %>% mutate(newSteps=meanIfNA(interval,steps,dailyActivity))
+d <- left_join(d,dailyActivity)
 ```
+
+```
+## Joining by: "interval"
+```
+
+Now with a bit of magic using ifelse I combine the steps and avg steps columns where I take steps if it exists or avg if it does not.
+
+
+```r
+d <- within(d, newSteps <- ifelse(!is.na(steps),steps,avg))
+```
+
 
 Create the histogram on this new steps field.
 
 ```r
 dailyActivity<-group_by(d,date)
-```
-
-```
-## Warning: Grouping rowwise data frame strips rowwise nature
-```
-
-```r
 dailyActivity <- summarise(dailyActivity,steps=sum(newSteps))
 hist(dailyActivity$steps,main = "Histogram of the Total Number of Steps Taken Each Day (replacing NA's with average)",xlab = "steps")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
 
 ```r
 myMean2 <- mean(dailyActivity$steps)
@@ -140,5 +136,5 @@ Now simply make the plot
 xyplot(newSteps ~ interval | isWeekend, data=activity, type='l',layout=c(1,2),xlab="Interval",ylab="Number of steps")
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
 
