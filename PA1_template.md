@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 Loading my libraries
 
@@ -35,7 +40,7 @@ dailyActivity <- summarise(dailyActivity,steps=sum(steps))
 hist(dailyActivity$steps,main = "Histogram of the Total Number of Steps Taken Each Day",xlab = "steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 ```r
 myMean <- mean(dailyActivity$steps)
@@ -55,7 +60,7 @@ dailyActivity<-summarise(dailyActivity,avg = mean(steps))
 with(dailyActivity, plot(interval,avg,type="l",main="Average Steps Taken",ylab="Average Steps"))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
 ```r
 myMaxInterval<- dailyActivity$interval[which.max(dailyActivity$avg)]
@@ -102,7 +107,7 @@ dailyActivity <- summarise(dailyActivity,steps=sum(newSteps))
 hist(dailyActivity$steps,main = "Histogram of the Total Number of Steps Taken Each Day (replacing NA's with average)",xlab = "steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
 
 ```r
 myMean2 <- mean(dailyActivity$steps)
@@ -136,5 +141,5 @@ Now simply make the plot
 xyplot(newSteps ~ interval | isWeekend, data=activity, type='l',layout=c(1,2),xlab="Interval",ylab="Number of steps")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png) 
 
